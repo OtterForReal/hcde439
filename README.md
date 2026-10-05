@@ -2,7 +2,7 @@
 
 Welcome to the HCDE 439 example Github repository!
 
-Student: Grace Zhang
+Student: Grace Zhang.
 
 ## What is Git? What is Github?
 
