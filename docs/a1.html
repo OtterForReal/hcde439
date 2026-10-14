@@ -1,18 +1,91 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+<head>
+  <meta charset="utf-8">
+  <title>Grace's Assignment 1</title>
+  <link href="style.css" rel="stylesheet">
+</head>
 
-    <title>Example Student's HCDE 439 Physical Computing Page!</title>
+<body>
 
-    <link href="style.css" rel="stylesheet" type="text/css" />
-  </head>
-  <body>
-    <h1>Example Student's Assignment 1!</h1>
-    <div class="header">
-      <img src="red-panda.jpg" />
-      <p>Here is all the documentation for assignment 1!</p>
-    </div>
-  </body>
+  <h1>Assignment 1: Blinking LEDs</h1>
+
+  <h2>1. Schematic</h2>
+
+  <img src="A1/Schematic picture.png" width="500">
+
+  <p>
+    This is my schematic for three LEDs.
+    Each LED is connected to a different Arduino pin
+    and uses a resistor to limit the current.
+  </p>
+
+  <h2>2. Resistor Calculation</h2>
+
+  <img src="A1/Resistor calculation.png" width="500">
+
+  <p>
+    With the three schematic with the LED, the calculation of the
+    resistors are also showing in the picture, with the resistors
+    in the kits only have 10, 100 or 220, I choose to use three of 100.
+  </p>
+
+  <h2>3. Blinking LEDs</h2>
+
+  <img src="A1/Blinking LEDs.gif" width="500">
+
+  <p>
+    This GIF shows how my LEDs blink.
+    Each LED turns on one at a time while the other two stay off.
+    The pattern repeats continuously with a time gap of 800ms.
+  </p>
+
+  <h2>4. Arduino Code</h2>
+
+  <img src="A1/Code with comments.png" width="8000">
+
+  <p>
+    This picture is the coding part with all the comments for each line.
+  </p>
+
+  <h2>5. Additional Questions</h2>
+
+  <h3>Question 1: Voltage Graph</h3>
+
+  <img src="A1/Voltage graph.jpg" width="500">
+
+  <p>
+    This graph shows the voltage across my three LEDs over time.
+    Each LED turns on one at a time, while the other two stay off.
+  </p>
+
+  <h3>Question 2:  How many LEDs could you blink independently with your Arduino? 
+    How much current would that draw?</h3>
+
+  <p>
+    My Arduino Uno has 14 digital pins from 0 to 13, I think it 
+    should support 14 LEDs, however recommendation of the LED is 20mA
+    and with the limitation of the microcontroller of 200mA, I would say only 
+    10 LEDs can blink independently with Arduino.
+  </p>
+
+  <h3>Question 3: How fast do you need to blink your LEDs until you no longer can tell that they are blinking?</h3>
+
+  <p>
+    When LEDs blink very fast, it looks like it is on as always with a 
+    dealy(10), with the experiment I tested, with a delay(15) you can clearly see the 
+    light is still blinking, when the time gap is only 0.13ms my eyes can't see the 
+    blinking anymore. This means the LED was blinking about 38.5 times per second,
+    and it looked like a steady light to my eyes.
+  </p>
+
+  <h3>Question 4: AI Reflection</h3>
+
+  <p>
+    I used ChatGPT to help me check my code for the html,
+    and there's no bug coming out.
+  </p>
+
+</body>
 </html>
+
