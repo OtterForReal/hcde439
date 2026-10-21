@@ -1,49 +1,66 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Grace's HCDE 439 Physical Computing Page!</title>
+  <title>Grace's HCDE 439 Physical Computing Page!</title>
 
-    <link href="style.css" rel="stylesheet" />
-  </head>
+  <link href="style.css" rel="stylesheet">
+</head>
 
-  <body>
+<body class="homepage">
+  <header>
     <h1>Grace's HCDE 439 Physical Computing Page!</h1>
 
-    <div class="header">
-      <img src="thor.jpg" />
-      <p>
-        Hi, I'm Grace! I'm a 4th year HCDE major. I'm excited to learn more about
-        physical computing and come out with some fun with Arduino! Btw, it's my cute baby on the left.
-      </p>
-    </div>
+    <div class="intro">
+      <img src="thor.jpg" alt="Thor, Grace's pet">
 
-    <div class="grid">
-      <div class="assignment">
-        <a href="a1.html">
-          <h2>Assignment 1: Blink!</h2>
-          <img src="A1/Blinking LEDs.gif" />
-        </a>
-        <p>Assignment 1 was blinking LEDs!</p>
-      </div>
-
-      <div class="assignment">
-        <a href="a2.html">
-          <h2>Assignment 2: Fade!</h2>
-          <img src="red-panda.jpg" />
-        </a>
-        <p>Assignment 2 was a panda!</p>
-      </div>
-
-      <div class="assignment">
-        <a href="a2.html">
-          <h2>Assignment 2: Fade!</h2>
-          <img src="red-panda.jpg" />
-        </a>
-        <p>Assignment 2 was a panda!</p>
+      <div>
+        <h2>Hi, I'm Grace!</h2>
+        <p>
+          I'm a 4th year HCDE major. I'm excited to learn more
+          about physical computing and have some fun with Arduino!
+          Btw, that's my cute baby in the photo.
+        </p>
       </div>
     </div>
-  </body>
+  </header>
+
+  <main>
+    <h2>My Assignments</h2>
+
+    <div class="assignment-grid">
+      <article class="assignment-card">
+        <h3>
+          <a href="a1.html">A1: Blink!</a>
+        </h3>
+
+        <div class="assignment-preview">
+          <img src="A1/Schematic picture.png"
+               alt="Schematic of the three-LED blinking circuit">
+        </div>
+
+        <a class="assignment-link" href="a1.html">
+          View Assignment 1 →
+        </a>
+      </article>
+
+      <article class="assignment-card">
+        <h3>
+          <a href="a2.html">A2: Fade!</a>
+        </h3>
+
+        <div class="assignment-preview">
+          <img src="A2/circuit1.jpg"
+               alt="Arduino Christmas light circuit with three LEDs and a button">
+        </div>
+
+        <a class="assignment-link" href="a2.html">
+          View Assignment 2 →
+        </a>
+      </article>
+    </div>
+  </main>
+</body>
 </html>
