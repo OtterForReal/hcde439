@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>A3: Input Output!</title>
+
+  <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <h1>A3: Input Output!</h1>
+
+  <h2>1. Project Overview</h2>
+
+  <p>
+    For this assignment, I created a "smart" window blinds
+    system using a photoresistor, a servo motor, and an yellow LED.
+    The photoresistor detects the brightness of the room.
+    When the room becomes brighter, the servo motor rotates
+    to close the blinds and the LED turns on.
+    When the room becomes darker, the servo motor opens
+    the blinds and the LED turns off. And since I don't really have
+    a blind, so the servo motion pretend the blind's motion.
+  </p>
+
+
+  <h2>2. Schematic</h2>
+
+  <img src="A3/Schematic Photo.jpg" width="600">
+
+  <p>
+    This schematic shows my photoresistor, servo motor,
+    LED, and resistors. The photoresistor (R1) and
+    10k ohm resistor (R2) create a voltage divider.
+    Arduino pin A0 reads the voltage between them.
+    And servo motor connects to pin ~10.
+    The yellow LED connects to pin ~9 with
+    a 220 ohm resistor (R3). All components share a common ground.
+  </p>
+
+
+  <h2>3. Circuit</h2>
+  <p>
+    All of the following picture are showing the same circuit
+    since there are so many wires, I just took several different 
+    photos with different angles to show the real circuit.
+  </p>
+
+  <img src="A3/circuit1.jpg" width="500">
+  
+  <img src="A3/circuit2.jpg" width="500">
+  
+  <img src="A3/circuit3.jpg" width="500">
+
+  <img src="A3/circuit4.jpg" width="500">
+
+  <h2>4. Resistor Calculation</h2>
+
+  <img src="A3/Resistor Calculation.jpg" width="500">
+
+  <p>
+    I chose a 10k ohm resistor (R2) for the
+    voltage divider. Assuming the photoresistor
+    ranges from 1k ohm in bright light to
+    100k ohm in darkness(as the lecture number).
+  </p>
+
+  <p>
+    I also used a current-limiting resistor
+    for my yellow LED. Assuming the LED has a
+    forward voltage of 2V and a current of 20mA,
+    the minimum calculated resistance is 150 ohms.
+  </p>
+
+  <p>
+    I used a 220 ohm resistor in this assignment and with 
+    a current around 13.6mA accross the LED.
+  </p>
+
+
+  <h2>5. Arduino Code</h2>
+
+  <pre><code>
+// Include the servo library.
+#include &lt;Servo.h&gt;
+
+// Set photoresistor to pin A0.
+const int sensorPin = A0;
+
+// Set servo motor to pin 10.
+const int servoPin = 10;
+
+// Set LED to pin 9.
+const int ledPin = 9;
+
+// Create a servo object.
+Servo blinds;
+
+// Run setup once when Arduino starts.
+void setup() {
+  // Start serial communication.
+  Serial.begin(9600);
+
+  // Set photoresistor as input.
+  pinMode(sensorPin, INPUT);
+
+  // Set LED as output.
+  pinMode(ledPin, OUTPUT);
+
+  // Connect servo motor to pin 10.
+  blinds.attach(servoPin);
+}
+
+// Repeat the program continuously.
+void loop() {
+  // Read light sensor value from 0 to 1023.
+  int lightValue = analogRead(sensorPin);
+
+  // Convert sensor value to servo angle from 0 to 180.
+  int angle = map(lightValue, 0, 1023, 0, 180);
+
+  // Convert sensor value to LED brightness from 0 to 255.
+  int brightness = map(lightValue, 0, 1023, 0, 255);
+
+  // Move the servo based on light level.
+  blinds.write(angle);
+
+  // Check if the room is bright.
+  if (lightValue > 600) {
+    // Turn the LED fully on.
+    analogWrite(ledPin, 255);
+
+    // Print a message for bright light.
+    Serial.println("Bright room - Blinds closing, light ON!");
+
+  // Check if the room is dark.
+  } else if (lightValue < 300) {
+    // Turn the LED off.
+    analogWrite(ledPin, 0);
+
+    // Print a message for darkness.
+    Serial.println("Dark room - Blinds opening, light OFF!");
+
+  // Otherwise, the room has medium light.
+  } else {
+    // Adjust LED brightness using the mapped value.
+    analogWrite(ledPin, brightness);
+
+    // Print a message for medium brightness.
+    Serial.println("Medium light - Blinds adjusting, light dimming!");
+  }
+
+  // Print the light sensor label.
+  Serial.print("Room brightness: ");
+
+  // Print the light sensor reading.
+  Serial.print(lightValue);
+
+  // Print the servo angle label.
+  Serial.print(" | Blind angle: ");
+
+  // Print the servo angle.
+  Serial.println(angle);
+
+  // Wait 200ms before reading again.
+  delay(200);
+}
+  </code></pre>
+
+
+  <h2>6. Circuit Operation</h2>
+
+  <video width="600" controls preload="metadata">
+    <source src="A3/operation.mp4" type="video/mp4">
+  </video>
+
+  <p>
+    This video shows my smart window blinds system.
+    When more light reaches the photoresistor,
+    the servo rotates toward the closed position
+    and the LED turns on.
+
+    When I cover the photoresistor,
+    the servo rotates toward the open position
+    and the LED turns off.
+
+    The example showing might not be perfect since the photoresistor
+    is stilling detecting some lights when cover up with the white paper.
+  </p>
+
+
+  <h2>7. Serial Monitor</h2>
+
+  <video width="600" controls>
+    <source src="A3/Serial Monitor.mp4" type="video/mp4">
+  </video>
+
+  <img src="A3/example serial monitor.png" width="600">
+  <p>
+    Might need to enlarge the webpage to see the upper photo.
+  </p>
+
+  <p>
+    The Serial Monitor prints the photoresistor
+    readings and the servo angles.
+
+    From my reading that, the sensor reading changed
+    from 313 to 773, while the servo angle
+    changed from 55 to 136 degrees.
+
+    This shows that the servo responds
+    to changes in room brightness.
+  </p>
+
+
+  <h2>8. Additional Questions</h2>
+
+  <h3>Question 1: In your voltage divider, can the variable resistor be either R1 or R2 or does it need to be one or the other? Justify your answer with example calculations.</h3>
+
+  <img src="A3/Q1 Calculation.jpg" width="600">
+  <p>
+    The variable resistor can be either R1 or R2.
+    Both arrangements work, but the voltage changes
+    in opposite directions.
+  </p>
+
+  <p>
+    Therefore, both positions work.
+    However, switching the photoresistor would reverse the sensor readings.
+    If I kept my code the same, the blinds would close when the room was dark 
+    which probably won't make sense in real life.
+  </p>
+
+
+  <h3>Question 2: Voltage vs. Time</h3>
+
+  <img src="A3/Voltage at A0 calculation.jpg" width="600">
+
+  <img src="A3/Voltage at A0 vs. Time.png" width="600">
+
+  <p>
+    This graph shows the voltage measured
+    at A0 over time during my circuit demonstration.
+
+    I converted the analogRead() values to voltage
+    using the following equation:
+  </p>
+
+  <p>
+    Voltage = Read value / 1023 * 5V
+  </p>
+
+  <p>
+    If the sensor reading of 313 
+    corresponds to approximately 1.53V,
+    while a reading of 773 corresponds
+    to approximately 3.78V.
+
+    When more light reaches the photoresistor,
+    the voltage increases would make the servo to closed.
+  </p>
+
+
+  <h3>Question 3: AnalogWrite and analogRead are respectively 8-bit and 10-bit values. Imagine you had 10-bit PWM and a 16-bit analog-to-digital converter instead. How would this change your map() code?</h3>
+
+  <p>
+    Currently, analogRead() uses 10-bit values
+    from 0 to 1023, and analogWrite() uses
+    8-bit values from 0 to 255.
+  </p>
+
+  <p>
+    If analogRead() used a 16-bit ADC,
+    its range would become 0 to 65535.
+    If analogWrite() used 10-bit PWM,
+    its range would become 0 to 1023.
+    (Number Comes from: https://forum.arduino.cc/t/16bit-number-from-analogread/374108/6)
+  </p>
+
+  <p>
+    The new map() code would be:
+  </p>
+
+  <pre><code>
+int brightness = map(lightValue, 0, 65535, 0, 1023);
+  </code></pre>
+
+  <p>
+    This change allows the Arduino to read
+    more detailed sensor values and control
+    the LED brightness with more steps.
+  </p>
+
+  <p>
+    For the servo motor, the mapping would be:
+  </p>
+
+  <pre><code>
+int angle = map(lightValue, 0, 65535, 0, 180);
+  </code></pre>
+
+  <p>
+    The servo angle stay the same ranges from 0 to 180 degrees,
+    but the sensor now provides more detailed input values.
+    Which the LED will be increases more "detailedly" if we 
+    can actually see it.
+  </p>
+
+
+  <p><a href="index.html">Back to Home</a></p>
+
+</body>
+</html>
