@@ -1,0 +1,520 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Assignment 5 - High(er) voltage and transistors!</title>
+
+  <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <h1>Assignment 5: High(er) voltage and transistors!</h1>
+
+  <p>
+    In this assignment, I used an IRLZ44N MOSFET
+    transistor to control an LED strip with a
+    capacitive touch sensor. When I touch the coin,
+    the LED strip turns on. When I release it,
+    the LED strip turns off.
+  </p>
+
+  <h2>1. Schematic</h2>
+
+  <img src="A5/Shcematic Drawing.jpg" width="600"
+       alt="Circuit schematic">
+
+  <p>
+    The 1M ohm resistor is connected between Arduino
+    pins 2 and 4 for capacitive sensing. Arduino pin 9
+    connects to the MOSFET Gate. The Drain connects to
+    the LED strip negative terminal, and the Source
+    connects to GND. The external power supply and
+    Arduino share a common ground.
+  </p>
+
+  <h2>2. Circuit</h2>
+
+  <img src="A5/Circuit 1.jpg" width="500"
+       alt="Circuit photo 1">
+
+  <p>
+    This photo shows my Arduino, breadboard, transistor,
+    and LED strip connections.
+  </p>
+
+  <img src="A5/Circuit 2.jpg" width="500"
+       alt="Circuit photo 2">
+
+  <p>
+    Detailed view.
+  </p>
+
+  <img src="A5/Circuit 3.jpg" width="500"
+       alt="Circuit photo 3">
+
+  <p>
+    Detailed view on the wiring.
+  </p>
+
+  <h2>3. Measurements and Calculations</h2>
+
+  <h3>Voltage Measurements</h3>
+  <p>
+    The following value measured from multimeter, and I tried my best
+    to read it clearly, there probably some human error in it.
+  </p>
+
+  <table border="1" cellpadding="8">
+    <tr>
+      <th>Measurement</th>
+      <th>Value</th>
+    </tr>
+    <tr>
+      <td>External power supply</td>
+      <td>11.89 - 11.95V</td>
+    </tr>
+    <tr>
+      <td>MOSFET Gate OFF</td>
+      <td>0V</td>
+    </tr>
+    <tr>
+      <td>MOSFET Gate ON</td>
+      <td>4.47V</td>
+    </tr>
+    <tr>
+      <td>MOSFET Source</td>
+      <td>0V</td>
+    </tr>
+    <tr>
+      <td>MOSFET Drain ON</td>
+      <td>Approximately 0V</td>
+    </tr>
+    <tr>
+      <td>LED strip ON</td>
+      <td>11.95V</td>
+    </tr>
+    <tr>
+      <td>LED strip current ON</td>
+      <td>Approximately 0.01A</td>
+    </tr>
+  </table>
+
+  <h3>Gate-to-Source Voltage</h3>
+
+  <p>Vgs = Vg - Vs</p>
+  <p>When ON: Vgs = 4.47 - 0 = 4.47V</p>
+  <p>When OFF: Vgs = 0 - 0 = 0V</p>
+
+  <p>
+    The MOSFET turns on when the Gate receives
+    a HIGH signal from the Arduino. When the Gate
+    voltage is 0V, the MOSFET turns off.
+  </p>
+
+  <h3>Drain-to-Source Voltage</h3>
+
+  <p>Vds = Vd - Vs</p>
+  <p>Vds = 0 - 0 = approximately 0V</p>
+
+  <p>
+    The voltage across the MOSFET is approximately
+    0V when it is on.
+  </p>
+
+  <h3>LED Strip Current</h3>
+
+  <p>Measured current: approximately 0.01A</p>
+  <p>0.01A x 1000 = 10mA</p>
+
+  <p>
+    This reading is approximate because I used
+    the 10A range on my multimeter.
+  </p>
+
+  <h3>MOSFET Maximum Current</h3>
+
+  
+  <p>
+    The IRLZ44N has a maximum continuous drain
+    current rating of 47A at a case temperature
+    of 25 degrees Celsius under specified conditions.
+    According to the
+    <a href="https://www.infineon.com/assets/row/public/documents/24/49/infineon-irlz44n-datasheet-en.pdf" target="_blank">
+      IRLZ44N Datasheet
+    </a>.
+  </p>
+
+
+  <p>0.01A &lt; 47A</p>
+
+  <p>
+    My approximate measured current is much lower
+    than the MOSFET's absolute maximum current rating.
+  </p>
+
+  <h3>1M Ohm Resistor</h3>
+
+  <p>
+    I used a 1M ohm resistor between Arduino pins
+    2 and 4 for capacitive sensing. This resistor
+    helps detect changes in capacitance when I
+    touch the coin.
+  </p>
+
+  <p>R = 1,000,000 ohms</p>
+  <p>I = V / R</p>
+  <p>I = 5 / 1,000,000 = 0.000005A = 5 microamps</p>
+
+  <h2>4. Firmware</h2>
+
+  <p>
+    I used the CapacitiveSensor library to read
+    the coin sensor. The touch threshold is 1000,
+    based on my Serial Monitor readings.
+    The analogWrite() function controls the
+    LED strip through the MOSFET.
+  </p>
+
+  <pre><code>
+#include &lt;CapacitiveSensor.h&gt; // Include the touch sensor library
+
+// Create the sensor using D2 (send) and D4 (receive).
+CapacitiveSensor touchSensor = CapacitiveSensor(2, 4);
+
+// Set D9 as the LED strip control pin.
+const int ledPin = 9;
+
+// Set the touch detection threshold.
+const long touchThreshold = 1000;
+
+// Start with the LED strip turned off.
+int ledBrightness = 0;
+
+// Run this function once when Arduino starts.
+void setup() {
+  // Set D9 LOW before enabling the output.
+  digitalWrite(ledPin, LOW);
+
+  // Set D9 as an output, initially LOW (0V).
+  pinMode(ledPin, OUTPUT);
+
+  // Start serial communication at 9600.
+  Serial.begin(9600);
+
+  // Disable automatic sensor calibration during testing.
+  touchSensor.set_CS_AutocaL_Millis(0xFFFFFFFF);
+}
+
+// Repeat this function continuously.
+void loop() {
+  // Read the capacitive touch sensor using 30 samples.
+  long touchValue = touchSensor.capacitiveSensor(30);
+
+  // Print the sensor reading label.
+  Serial.print("Touch value: ");
+
+  // Print the sensor reading.
+  Serial.println(touchValue);
+
+  // Check if the foil is being touched.
+  if (touchValue > touchThreshold) {
+    // Set the LED strip to full brightness.
+    ledBrightness = 255;
+  } else {
+    // Turn the LED strip off.
+    ledBrightness = 0;
+  }
+
+  // Use PWM to control LED strip brightness.
+  analogWrite(ledPin, ledBrightness);
+
+  // Print the brightness label.
+  Serial.print("LED brightness: ");
+
+  // Print the current brightness value.
+  Serial.println(ledBrightness);
+
+  // Wait 50 milliseconds before the next reading.
+  delay(50);
+}
+
+  </code></pre>
+
+  <h2>5. Circuit Operation</h2>
+
+  <video width="500" controls>
+    <source src="A5/Circuit Operation video.mp4"
+            type="video/mp4">
+    Your browser does not support video.
+  </video>
+
+  <p>
+    When I touch the coin, the capacitive sensor
+    detects the change and the Arduino turns on
+    the LED strip. When I release the coin, the
+    LED strip turns off.
+  </p>
+
+  <h2>6. Additional Questions</h2>
+
+  <h3>Question 1: These are the datasheets for the n-mosfet transistor: DMT6009LCT, IRLZ44N, P30N06LE. Read the text on your mosfet to see which one you have. For your mosfet, what is the absolute maximum amount of current between pins 2 and 3?</h3>
+
+  <p>
+    My MOSFET is the IRLZ44N MOSFET.
+    Pin 2 is the Drain and pin 3 is the Source.
+  </p>
+
+  <p>
+    According to the datasheet, the maximum
+    continuous drain current is 47A at a
+    case temperature of 25 degrees Celsius
+    under specified conditions.
+  </p>
+
+  <p>
+    <a href="https://www.infineon.com/assets/row/public/documents/24/49/infineon-irlz44n-datasheet-en.pdf">
+      IRLZ44N Datasheet
+    </a>
+  </p>
+
+  <h3>Question 2: Draw a schematic for a circuit with using at least your arduino, a DC motor, a flyback diode, and capacitors between power and ground. Find parts with datasheets you could use for each of these schematic components.</h3>
+
+  <img src="A5/Q2 schematic.jpg" width="600"
+       alt="Question 2 motor schematic">
+
+  <p>
+    For the resistor, I followed the
+    lecture's simplified calculation:
+  </p>
+
+  <p>Ic = 40 x Ib</p>
+  <p>Ib &lt; 200mA / 40 = 5mA</p>
+  <p>R &gt; 4V / 0.005A = 800 ohms</p>
+  <p>I chose a 1k ohm resistor.</p>
+  <p>Ib = 4V / 1000 ohms = 4mA</p>
+
+  <h4>Component Datasheets</h4>
+
+  <ul>
+    <li>
+      <a href="https://docs.arduino.cc/resources/datasheets/A000066-datasheet.pdf">
+        Arduino Uno R3
+      </a>
+    </li>
+    <li>
+      <a href="https://www.pololu.com/product/1117/specs">
+        Example DC Motor Specifications
+      </a>
+    </li>
+    <li>
+      <a href="https://www.onsemi.com/pub/Collateral/1N4001-D.PDF">
+        1N4007 Flyback Diode Datasheet
+      </a>
+    </li>
+  </ul>
+
+    <h3>
+Question 3: Here is the datasheet for the L293D chip: https://www.ti.com/product/L293D. Draw a schematic using at least your arduino, this chip, and two motors. Write (pseudo) code that shows how you would move the motors both forward, both back, then one forward one back, and one back then forward.
+    </h3>
+
+
+  <img src="A5/Q3 schematic.jpg" width="600"
+       alt="Question 3 L293D schematic">
+
+  <p>
+    The L293D allows the Arduino to control
+    two DC motors independently. Changing
+    the HIGH and LOW input signals changes
+    each motor's direction.
+  </p>
+
+  <h4>Motor Direction Table</h4>
+
+  <table border="1" cellpadding="8">
+    <tr>
+      <th>Movement</th>
+      <th>D4</th>
+      <th>D3</th>
+      <th>D6</th>
+      <th>D5</th>
+    </tr>
+    <tr>
+      <td>Both forward</td>
+      <td>HIGH</td>
+      <td>LOW</td>
+      <td>HIGH</td>
+      <td>LOW</td>
+    </tr>
+    <tr>
+      <td>Both backward</td>
+      <td>LOW</td>
+      <td>HIGH</td>
+      <td>LOW</td>
+      <td>HIGH</td>
+    </tr>
+    <tr>
+      <td>A forward, B backward</td>
+      <td>HIGH</td>
+      <td>LOW</td>
+      <td>LOW</td>
+      <td>HIGH</td>
+    </tr>
+    <tr>
+      <td>A backward, B forward</td>
+      <td>LOW</td>
+      <td>HIGH</td>
+      <td>HIGH</td>
+      <td>LOW</td>
+    </tr>
+  </table>
+
+  <h4>Pseudocode</h4>
+
+  <pre><code>
+// Motor A: D4 connects to 1A on L293D.
+int motorA1 = 4;
+
+// Motor A: D3 connects to 2A on L293D.
+int motorA2 = 3;
+
+// Motor B: D6 connects to 3A on L293D.
+int motorB1 = 6;
+
+// Motor B: D5 connects to 4A on L293D.
+int motorB2 = 5;
+
+// Run setup once when the Arduino starts.
+void setup() {
+
+  // Set Motor A input 1 as output.
+  pinMode(motorA1, OUTPUT);
+
+  // Set Motor A input 2 as output.
+  pinMode(motorA2, OUTPUT);
+
+  // Set Motor B input 1 as output.
+  pinMode(motorB1, OUTPUT);
+
+  // Set Motor B input 2 as output.
+  pinMode(motorB2, OUTPUT);
+
+  // Start with Motor A stopped.
+  digitalWrite(motorA1, LOW);
+
+  // Keep Motor A's second input LOW.
+  digitalWrite(motorA2, LOW);
+
+  // Start with Motor B stopped.
+  digitalWrite(motorB1, LOW);
+
+  // Keep Motor B's second input LOW.
+  digitalWrite(motorB2, LOW);
+}
+
+// Repeat the motor movements continuously.
+void loop() {
+
+  // Both motors move forward.
+  digitalWrite(motorA1, HIGH);
+  digitalWrite(motorA2, LOW);
+  digitalWrite(motorB1, HIGH);
+  digitalWrite(motorB2, LOW);
+
+  // Run forward for 2 seconds.
+  delay(2000);
+
+  // Stop both motors before reversing.
+  digitalWrite(motorA1, LOW);
+  digitalWrite(motorA2, LOW);
+  digitalWrite(motorB1, LOW);
+  digitalWrite(motorB2, LOW);
+
+  // Wait 200 milliseconds.
+  delay(200);
+
+  // Both motors move backward.
+  digitalWrite(motorA1, LOW);
+  digitalWrite(motorA2, HIGH);
+  digitalWrite(motorB1, LOW);
+  digitalWrite(motorB2, HIGH);
+
+  // Run backward for 2 seconds.
+  delay(2000);
+
+  // Stop both motors before changing direction.
+  digitalWrite(motorA1, LOW);
+  digitalWrite(motorA2, LOW);
+  digitalWrite(motorB1, LOW);
+  digitalWrite(motorB2, LOW);
+
+  // Wait 200 milliseconds.
+  delay(200);
+
+  // Motor A moves forward.
+  digitalWrite(motorA1, HIGH);
+  digitalWrite(motorA2, LOW);
+
+  // Motor B moves backward.
+  digitalWrite(motorB1, LOW);
+  digitalWrite(motorB2, HIGH);
+
+  // Run for 2 seconds.
+  delay(2000);
+
+  // Stop both motors before changing direction.
+  digitalWrite(motorA1, LOW);
+  digitalWrite(motorA2, LOW);
+  digitalWrite(motorB1, LOW);
+  digitalWrite(motorB2, LOW);
+
+  // Wait 200 milliseconds.
+  delay(200);
+
+  // Motor A moves backward.
+  digitalWrite(motorA1, LOW);
+  digitalWrite(motorA2, HIGH);
+
+  // Motor B moves forward.
+  digitalWrite(motorB1, HIGH);
+  digitalWrite(motorB2, LOW);
+
+  // Run for 2 seconds.
+  delay(2000);
+
+  // Stop both motors before repeating.
+  digitalWrite(motorA1, LOW);
+  digitalWrite(motorA2, LOW);
+  digitalWrite(motorB1, LOW);
+  digitalWrite(motorB2, LOW);
+
+  // Wait 200 milliseconds.
+  delay(200);
+}
+</code></pre>
+
+  <p>
+    <a href="https://www.ti.com/product/L293D">
+      L293D Datasheet
+    </a>
+  </p>
+
+  <h3>Question 4: AI Reflection</h3>
+
+  <p>
+    I used ChatGPT to help me find the datasheets for Q2.
+    <a herf = "https://chatgpt.com/share/6af5a07a-c1fc-83ea-a47e-4e7f1d3b9e97">
+    ChatGPT conversation</a>
+    https://chatgpt.com/share/6af5a07a-c1fc-83ea-a47e-4e7f1d3b9e97
+  </p>
+
+  <p>
+    <a href="index.html">Back to Home</a>
+  </p>
+
+</body>
+</html>
